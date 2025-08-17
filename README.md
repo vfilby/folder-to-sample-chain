@@ -10,11 +10,11 @@
 
 A Python-based audio processing tool designed to create evenly spaced sample chains from local WAV files, specifically optimized for use with the Elektron Digitakt 2 sampler.
 
-## 🎯 Project Overview
+## Project Overview
 
 The NI Sample Chainer processes audio files to create consistent, evenly spaced samples that can be easily loaded into the Digitakt 2 for music production and performance. It's designed for musicians, producers, and sound designers who need to quickly convert long audio files into usable sample collections.
 
-## ✨ Key Features
+## Key Features
 
 - **Batch Processing**: Process entire directories of WAV files at once
 - **Even Spacing**: Generate samples at consistent temporal intervals
@@ -23,12 +23,12 @@ The NI Sample Chainer processes audio files to create consistent, evenly spaced 
 - **Configurable Parameters**: Customize sample duration, overlap, crossfading, and more
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 - Python 3.8 or higher
-- Audio processing libraries (will be specified in requirements.txt)
+- Audio processing libraries (specified in requirements.txt)
 
 ### Installation
 
@@ -55,7 +55,7 @@ python src/main.py input_dir output_dir \
   --quality high
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ni-sample-chainer/
@@ -65,15 +65,15 @@ ni-sample-chainer/
 │   ├── utils/             # Utility functions
 │   └── main.py            # Main application entry point
 ├── tests/                 # Test suite
-├── docs/                  # Documentation
-├── examples/              # Usage examples
-├── output_samples/        # Generated sample output
+├── sample_data/           # Test audio samples
+├── config.yaml            # Configuration file
+├── requirements.txt        # Python dependencies
 ├── AI_RULES.md            # AI development guidelines
 ├── PROJECT_SPEC.md        # Detailed project specification
 └── README.md              # This file
 ```
 
-## 🔧 Configuration
+## Configuration
 
 The tool supports both command-line options and configuration files. Create a `config.yaml` file in your project directory:
 
@@ -94,87 +94,158 @@ digitakt:
   naming_convention: "{original_name}_{sample_number:03d}"
 ```
 
-## 📊 Supported Audio Formats
+## Supported Audio Formats
 
 ### Input
 - **Primary**: WAV (16-bit, 24-bit, 44.1kHz, 48kHz, 96kHz)
-- **Future**: MP3, AIFF, FLAC
+- **Secondary**: MP3, AIFF, FLAC
 
 ### Output
-- **Format**: WAV (16-bit, 44.1kHz - Digitakt 2 standard)
-- **Channels**: Mono and Stereo
+- **Format**: WAV (16-bit, 48kHz - Digitakt 2 standard)
+- **Channels**: Stereo (configurable to mono)
 - **Quality**: High-fidelity with configurable compression
 
-## 🎵 Sample Chain Generation
+## Sample Chain Generation
 
-The tool creates samples using an intelligent algorithm that:
+The tool intelligently groups audio files and creates sample chains based on:
 
-1. **Analyzes** the input audio file for optimal sample points
-2. **Generates** evenly spaced samples with configurable duration
-3. **Applies** smooth crossfades between overlapping samples
-4. **Exports** organized, named files ready for Digitakt 2
+1. **Hi-hat Detection**: Automatically identifies closed and open hi-hat samples
+2. **Directory Structure**: Groups samples by their folder organization
+3. **Smart Interleaving**: Combines related samples into logical chains
+4. **Power-of-Two Optimization**: Ensures chains have optimal sample counts for samplers
 
-### Example Output Structure
+## Directory Structure Examples
 
+### Input Structure
 ```
-output_samples/
-├── original_song_001.wav
-├── original_song_002.wav
-├── original_song_003.wav
-├── original_song_004.wav
-└── metadata.json
+sample_data/
+├── input/
+│   ├── samples 2/
+│   │   ├── closedhh/
+│   │   │   ├── sample hat1.wav
+│   │   │   ├── sample hat2.wav
+│   │   │   └── sample hat3.wav
+│   │   ├── openhh/
+│   │   │   ├── sample hat1 1.wav
+│   │   │   ├── sample hat1 2.wav
+│   │   │   ├── sample hat2.wav
+│   │   │   └── sample hat3.wav
+│   │   ├── kick/
+│   │   │   ├── sample hollow.wav
+│   │   │   └── sample sharp.wav
+│   │   ├── clap/
+│   │   │   ├── sample double.wav
+│   │   │   └── sample tank.wav
+│   │   ├── perc/
+│   │   │   ├── A06.wav
+│   │   │   ├── A07.wav
+│   │   │   └── A08.wav
+│   │   └── sfx/
+│   │       └── 495310__boryslaw_kozielski__test-stereo.mp3
+│   └── Loops/              # Excluded from processing
+│       └── loop_samples.wav
 ```
 
-## 🧪 Testing
+### Output Structure
+```
+output_directory/
+├── CHAIN_SUMMARY.md        # Chain summary (in root)
+├── chains/                 # Sample chain WAV files ONLY
+│   ├── hats_1-8-0.882s.wav
+│   ├── samples 2-kick-2-0.462s.wav
+│   ├── samples 2-perc-4-0.404s.wav
+│   ├── samples 2-clap-2-0.520s.wav
+│   └── samples 2-sfx-1-30.338s.wav
+└── metadata/               # Configuration + Individual JSON metadata files
+    ├── chain_config.yaml
+    ├── hats_1-8-0.882s.json
+    ├── samples 2-kick-2-0.462s.json
+    ├── samples 2-perc-4-0.404s.json
+    ├── samples 2-clap-2-0.520s.json
+    └── samples 2-sfx-1-30.338s.json
+```
 
-Run the test suite to ensure everything works correctly:
+## Hi-hat Chain Generation
+
+The tool creates intelligent hi-hat chains by:
+
+1. **Detecting hi-hat types**: Identifies closed and open hi-hat samples
+2. **Grouping by base name**: Groups samples with the same underlying sound
+3. **Interleaving pattern**: Places closed samples first, then open samples
+4. **Maintaining integrity**: Keeps all samples of the same hi-hat name together
+
+Example hi-hat chain structure:
+```
+hats_1: 8 samples
+├── closedhh/sample hat1.wav      # Closed hi-hat
+├── openhh/sample hat1 1.wav      # Open hi-hat variant 1
+├── openhh/sample hat1 2.wav      # Open hi-hat variant 2
+├── closedhh/sample hat2.wav      # Closed hi-hat
+├── openhh/sample hat2.wav        # Open hi-hat
+├── closedhh/sample hat3.wav      # Closed hi-hat
+├── openhh/sample hat3.wav        # Open hi-hat
+└── [padded to power of 2]
+```
+
+## Testing
+
+Run the test suite to verify functionality:
 
 ```bash
 # Run all tests
-python -m pytest tests/
+python run_tests.py
 
-# Run with coverage
-python -m pytest tests/ --cov=src --cov-report=html
+# Run with pytest directly
+pytest tests/
+
+# Run specific test categories
+pytest tests/unit/
+pytest tests/integration/
 ```
 
-## 📚 Documentation
+## Development
 
-- **[AI Rules](AI_RULES.md)**: Development guidelines and standards
-- **[Project Specification](PROJECT_SPEC.md)**: Detailed technical requirements
-- **[Examples](examples/)**: Usage examples and sample configurations
+### Setup Development Environment
 
-## 🤝 Contributing
+```bash
+# Install development dependencies
+python setup_dev.py
 
-We welcome contributions! Please read our development guidelines in `AI_RULES.md` and ensure all code follows the established standards.
+# Run linting and formatting
+python -m black src/
+python -m flake8 src/
+```
 
-### Development Setup
+### Project Architecture
+
+- **Modular Design**: Separated concerns for audio processing, chain planning, and export
+- **Configuration Driven**: YAML-based configuration for easy customization
+- **Test Coverage**: Comprehensive testing with real audio samples
+- **Error Handling**: Robust error handling and user feedback
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes following the AI rules
+3. Make your changes
 4. Add tests for new functionality
-5. Submit a pull request
+5. Ensure all tests pass
+6. Submit a pull request
 
-## 📄 License
+## License
 
-[License information to be added]
+This project is provided as-is for educational and personal use. See the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Support
 
-- Built specifically for Elektron Digitakt 2 users
-- Inspired by the need for efficient sample preparation workflows
-- Built with modern Python audio processing libraries
-
-## 📞 Support
-
-For questions, issues, or feature requests:
-- Create an issue in the repository
-- Check the documentation in the `docs/` folder
-- Review the examples in the `examples/` folder
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Review the PROJECT_SPEC.md for technical details
+- Check the TESTING_GUIDE.md for troubleshooting
 
 ---
 
-**Note**: This project is in active development. Features and APIs may change as we work toward the final release.
+*Generated by NI Sample Chainer*
 
 
 
