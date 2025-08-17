@@ -17,74 +17,64 @@ from main import process_audio_directory
 class TestBasicFunctionality:
     """Test basic functionality of the NI Sample Chainer."""
     
-    def test_process_audio_directory_placeholder(self):
-        """Test that the placeholder function returns expected structure."""
-        result = process_audio_directory(
-            input_dir="test_input",
-            output_dir="test_output",
-            sample_duration=2.0,
-            overlap=10.0,
-            crossfade=100.0,
-            quality="high",
-            parallel_processes=2
-        )
+    def test_process_audio_directory_import(self):
+        """Test that the function can be imported and has correct signature."""
+        # Check that function exists and has correct parameters
+        import inspect
+        sig = inspect.signature(process_audio_directory)
+        params = list(sig.parameters.keys())
         
-        # Check that result has expected structure
-        assert isinstance(result, dict)
-        assert 'status' in result
-        assert 'message' in result
-        assert 'input_directory' in result
-        assert 'output_directory' in result
-        assert 'configuration' in result
+        # Should have these parameters: input_dir, output_dir, dry_run
+        expected_params = ['input_dir', 'output_dir', 'dry_run']
+        for param in expected_params:
+            assert param in params, f"Missing parameter: {param}"
         
-        # Check specific values
-        assert result['status'] == 'not_implemented'
-        assert result['input_directory'] == 'test_input'
-        assert result['output_directory'] == 'test_output'
+        # Should not have removed parameters
+        removed_params = ['sample_duration', 'overlap', 'crossfade', 'quality', 'parallel_processes']
+        for param in removed_params:
+            assert param not in params, f"Removed parameter still present: {param}"
         
-        # Check configuration
-        config = result['configuration']
-        assert config['sample_duration'] == 2.0
-        assert config['overlap'] == 10.0
-        assert config['crossfade'] == 100.0
-        assert config['quality'] == 'high'
-        assert config['parallel_processes'] == 2
+        print("✅ Function signature is correct")
+    
+    def test_process_audio_directory_dry_run(self):
+        """Test that dry run mode works correctly."""
+        # Create a temporary test directory
+        test_input = Path("tests/audio_samples")
+        test_output = Path("test_output")
+        
+        if test_input.exists():
+            result = process_audio_directory(
+                input_dir=str(test_input),
+                output_dir=str(test_output),
+                dry_run=True
+            )
+            
+            # Check that result has expected structure
+            assert isinstance(result, dict)
+            assert 'status' in result
+            assert result['status'] == 'dry_run'
+            print("✅ Dry run mode works correctly")
+        else:
+            pytest.skip("Test audio samples directory not found")
     
     def test_process_audio_directory_defaults(self):
         """Test that default parameters work correctly."""
-        result = process_audio_directory(
-            input_dir="test_input",
-            output_dir="test_output"
-        )
+        # Test that function can be called with minimal parameters
+        test_input = Path("tests/audio_samples")
+        test_output = Path("test_output")
         
-        # Check default values
-        config = result['configuration']
-        assert config['sample_duration'] == 1.0
-        assert config['overlap'] == 0.0
-        assert config['crossfade'] == 50.0
-        assert config['quality'] == 'standard'
-        assert config['parallel_processes'] == 4
-    
-    def test_process_audio_directory_custom_params(self):
-        """Test that custom parameters are properly handled."""
-        custom_params = {
-            'sample_duration': 5.0,
-            'overlap': 25.0,
-            'crossfade': 200.0,
-            'quality': 'fast',
-            'parallel_processes': 8
-        }
-        
-        result = process_audio_directory(
-            input_dir="test_input",
-            output_dir="test_output",
-            **custom_params
-        )
-        
-        # Check custom values
-        config = result['configuration']
-        for key, value in custom_params.items():
-            assert config[key] == value
+        if test_input.exists():
+            result = process_audio_directory(
+                input_dir=str(test_input),
+                output_dir=str(test_output)
+            )
+            
+            # Should return dry run result since no actual processing
+            assert isinstance(result, dict)
+            assert 'status' in result
+            print("✅ Default parameters work correctly")
+        else:
+            pytest.skip("Test audio samples directory not found")
 
 if __name__ == "__main__":
     pytest.main([__file__])
