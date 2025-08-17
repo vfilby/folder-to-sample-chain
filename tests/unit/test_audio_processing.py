@@ -156,15 +156,15 @@ class TestChainExporter:
     """Test the ChainExporter class."""
     
     def test_generate_filename(self):
-        """Test filename generation."""
+        """Test filename generation for complex group key."""
         exporter = ChainExporter()
         
-        # Mock chain data
+        # Mock chain data with current structure
         chain_data = {
+            'name': 'drums/kick',
             'metadata': {
-                'group_key': 'drums/kick',
                 'sample_count': 16,
-                'sample_duration': 1.5
+                'estimated_duration_seconds': 1.5
             }
         }
         
@@ -176,12 +176,12 @@ class TestChainExporter:
         """Test filename generation for simple group key."""
         exporter = ChainExporter()
         
-        # Mock chain data
+        # Mock chain data with current structure
         chain_data = {
+            'name': 'hihat',
             'metadata': {
-                'group_key': 'hihat',
                 'sample_count': 8,
-                'sample_duration': 0.5
+                'estimated_duration_seconds': 0.5
             }
         }
         

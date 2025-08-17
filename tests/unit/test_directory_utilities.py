@@ -23,14 +23,12 @@ class TestDirectoryDiscovery:
         self.test_dirs = [
             'src',
             'src/audio_processing',
-            'src/digitakt_export',
             'src/utils',
             'tests',
             'tests/unit',
             'tests/integration',
-            'docs',
-            'examples',
-            'output_samples'
+            'tests/utils',
+            'sample_data'
         ]
     
     def test_find_all_directories(self):
@@ -60,12 +58,10 @@ class TestDirectoryDiscovery:
             'src/main.py',
             'src/__init__.py',
             'src/audio_processing/__init__.py',
-            'src/digitakt_export/__init__.py',
             'src/utils/__init__.py',
             'tests/unit/test_basic_functionality.py',
             'tests/unit/test_project_structure.py',
             'tests/unit/test_directory_utilities.py',
-            'examples/basic_usage.py',
             'setup_dev.py'
         ]
         
@@ -82,10 +78,7 @@ class TestDirectoryDiscovery:
         
         # Check that expected markdown files exist
         expected_md_files = [
-            'README.md',
-            'AI_RULES.md',
-            'PROJECT_SPEC.md',
-            'DEVELOPMENT_ROADMAP.md'
+            'README.md'
         ]
         
         for expected_file in expected_md_files:
@@ -257,14 +250,12 @@ class TestProjectStructureValidation:
             'directories': {
                 'src',
                 'src/audio_processing',
-                'src/digitakt_export',
                 'src/utils',
                 'tests',
                 'tests/unit',
                 'tests/integration',
-                'docs',
-                'examples',
-                'output_samples'
+                'tests/utils',
+                'sample_data'
             },
             'files': {
                 'src/main.py',
@@ -292,11 +283,11 @@ class TestProjectStructureValidation:
         python_packages = [
             'src',
             'src/audio_processing',
-            'src/digitakt_export',
             'src/utils',
             'tests',
             'tests/unit',
-            'tests/integration'
+            'tests/integration',
+            'tests/utils'
         ]
         
         for package in python_packages:

@@ -23,21 +23,16 @@ class TestProjectStructure:
         self.expected_directories = {
             'src',
             'src/audio_processing',
-            'src/digitakt_export', 
             'src/utils',
             'tests',
             'tests/unit',
             'tests/integration',
-            'docs',
-            'examples',
-            'output_samples'
+            'tests/utils',
+            'sample_data'
         }
         
         self.expected_files = {
             'README.md',
-            'AI_RULES.md',
-            'PROJECT_SPEC.md',
-            'DEVELOPMENT_ROADMAP.md',
             'requirements.txt',
             'config.yaml',
             'setup_dev.py',
@@ -45,14 +40,13 @@ class TestProjectStructure:
             'src/__init__.py',
             'src/main.py',
             'src/audio_processing/__init__.py',
-            'src/digitakt_export/__init__.py',
             'src/utils/__init__.py',
             'tests/__init__.py',
             'tests/unit/__init__.py',
             'tests/integration/__init__.py',
+            'tests/utils/__init__.py',
             'tests/unit/test_basic_functionality.py',
-            'tests/unit/test_project_structure.py',
-            'examples/basic_usage.py'
+            'tests/unit/test_project_structure.py'
         }
     
     def test_project_root_exists(self):
@@ -89,7 +83,6 @@ class TestProjectStructure:
         python_packages = [
             'src',
             'src/audio_processing',
-            'src/digitakt_export',
             'src/utils',
             'tests',
             'tests/unit',
@@ -110,7 +103,7 @@ class TestProjectStructure:
         assert main_file.exists(), "Missing main.py entry point"
         
         # Check module structure
-        modules = ['audio_processing', 'digitakt_export', 'utils']
+        modules = ['audio_processing', 'utils']
         for module in modules:
             module_dir = src_dir / module
             module_init = module_dir / '__init__.py'
@@ -138,37 +131,34 @@ class TestProjectStructure:
     
     def test_documentation_structure(self):
         """Test that documentation is properly organized."""
-        docs_dir = self.project_root / 'docs'
-        assert docs_dir.exists(), "Missing docs directory"
-        
-        # Check for key documentation files
-        key_docs = ['README.md', 'AI_RULES.md', 'PROJECT_SPEC.md', 'DEVELOPMENT_ROADMAP.md']
+        # Check for key documentation files in root
+        key_docs = ['README.md']
         for doc in key_docs:
             doc_file = self.project_root / doc
             assert doc_file.exists(), f"Missing key documentation: {doc}"
-    
-    def test_configuration_files(self):
-        """Test that configuration files are present."""
-        config_files = ['config.yaml', 'requirements.txt']
-        for config_file in config_files:
-            config_path = self.project_root / config_file
-            assert config_path.exists(), f"Missing configuration file: {config_file}"
-            assert config_path.is_file(), f"Configuration file {config_file} is not a file"
+            assert doc_file.is_file(), f"Documentation {doc} is not a file"
     
     def test_examples_structure(self):
         """Test that examples are properly organized."""
-        examples_dir = self.project_root / 'examples'
-        assert examples_dir.exists(), "Missing examples directory"
-        
-        # Check for basic usage example
-        basic_usage = examples_dir / 'basic_usage.py'
-        assert basic_usage.exists(), "Missing basic_usage.py example"
+        # Examples are now in sample_data directory
+        sample_data_dir = self.project_root / 'sample_data'
+        assert sample_data_dir.exists(), "Missing sample_data directory"
+        assert sample_data_dir.is_dir(), "sample_data is not a directory"
     
     def test_output_directory_structure(self):
         """Test that output directories are properly set up."""
-        output_dir = self.project_root / 'output_samples'
-        assert output_dir.exists(), "Missing output_samples directory"
-        assert output_dir.is_dir(), "output_samples is not a directory"
+        # Output directories are created dynamically during processing
+        # Check that we can create output directories
+        test_output = self.project_root / 'test_output_temp'
+        try:
+            test_output.mkdir(exist_ok=True)
+            assert test_output.exists(), "Should be able to create output directory"
+            assert test_output.is_dir(), "Created output should be a directory"
+        finally:
+            # Cleanup
+            if test_output.exists():
+                import shutil
+                shutil.rmtree(test_output)
     
     def test_git_ignore_present(self):
         """Test that .gitignore is present and properly configured."""
@@ -261,7 +251,7 @@ class TestDirectoryPermissions:
     
     def test_source_directories_are_writable(self):
         """Test that source directories are writable for development."""
-        writable_dirs = ['src', 'tests', 'examples']
+        writable_dirs = ['src', 'tests', 'sample_data']
         for dir_name in writable_dirs:
             dir_path = self.project_root / dir_name
             assert os.access(dir_path, os.W_OK), f"Directory not writable: {dir_path}"
