@@ -3,13 +3,7 @@
 
 # Default processing settings
 defaults:
-  sample_duration: 1.0      # Duration of each sample in seconds
-  overlap: 0                 # Overlap percentage between samples (0-50)
-  crossfade: 50             # Crossfade duration in milliseconds
-  start_trim: 0.0           # Trim from start of file in seconds
-  end_trim: 0.0             # Trim from end of file in seconds
-  quality: standard          # Quality preset: fast, standard, high
-  parallel_processes: 4      # Number of parallel processes for batch operations
+  max_samples_per_chain: 16  # Maximum samples per chain (must be power of 2)
 
 # Audio processing settings
 audio:
@@ -17,8 +11,9 @@ audio:
     - wav
     - flac
     - aiff
+    - mp3
   output_format: wav         # Output format (always WAV for Digitakt 2)
-  sample_rate: 44100         # Output sample rate (Digitakt 2 standard)
+  sample_rate: 48000         # Output sample rate (Digitakt 2 standard)
   bit_depth: 16              # Output bit depth (Digitakt 2 standard)
   normalize: true             # Normalize audio levels
   fade_in: 10                # Fade in duration in milliseconds
@@ -31,29 +26,6 @@ digitakt:
   folder_structure: true     # Create organized folder structure
   metadata_export: true      # Export sample metadata as JSON
   batch_export: true         # Export all samples in a single operation
-
-# Quality presets
-quality_presets:
-  fast:
-    sample_duration: 1.0
-    overlap: 0
-    crossfade: 25
-    normalize: false
-    parallel_processes: 8
-  
-  standard:
-    sample_duration: 1.0
-    overlap: 0
-    crossfade: 50
-    normalize: true
-    parallel_processes: 4
-  
-  high:
-    sample_duration: 1.0
-    overlap: 10
-    crossfade: 100
-    normalize: true
-    parallel_processes: 2
 
 # File organization
 output:

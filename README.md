@@ -47,11 +47,8 @@ pip install -r requirements.txt
 # Process a directory of audio files
 python src/main.py input_audio_directory output_samples
 
-# With custom parameters
-python src/main.py input_dir output_dir \
-  --quality high \
-  --parallel 8 \
-  --verbose
+# With verbose output
+python src/main.py input_dir output_dir --verbose
 
 # Preview what will be created (dry-run mode)
 python src/main.py input_dir output_dir --dry-run
@@ -63,8 +60,6 @@ python src/main.py input_dir output_dir --dry-run
 python src/main.py INPUT_DIR OUTPUT_DIR [OPTIONS]
 
 Options:
-  --quality, -q TEXT        Quality preset: fast, standard, high [default: standard]
-  --parallel, -p INTEGER    Number of parallel processes [default: 4]
   --verbose, -v            Verbose output
   --dry-run                Show what would be processed without doing it
   --config PATH            Configuration file path
@@ -95,8 +90,7 @@ The tool supports both command-line options and configuration files. The `config
 ```yaml
 # Default processing settings
 defaults:
-  quality: standard          # fast, standard, high
-  parallel_processes: 4
+  max_samples_per_chain: 16
 
 # Audio processing settings
 audio:
@@ -105,18 +99,6 @@ audio:
   sample_rate: 48000        # Output sample rate
   bit_depth: 16             # Output bit depth
   normalize: true
-
-# Quality presets
-quality_presets:
-  fast:
-    normalize: false
-    parallel_processes: 8
-  standard:
-    normalize: true
-    parallel_processes: 4
-  high:
-    normalize: true
-    parallel_processes: 2
 ```
 
 ## Supported Audio Formats

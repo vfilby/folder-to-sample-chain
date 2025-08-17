@@ -228,15 +228,13 @@ def _dry_run_processing(audio_files: List[Path], config: SampleChainConfig, inpu
         'regular_chains': len(regular_chains)
     }
 
-def process_audio_directory(input_dir: str, output_dir: str, quality: str = "standard", parallel_processes: int = 4, dry_run: bool = False) -> Dict[str, Any]:
+def process_audio_directory(input_dir: str, output_dir: str, dry_run: bool = False) -> Dict[str, Any]:
     """
     Process audio files from input directory and create sample chains.
     
     Args:
         input_dir: Input directory containing audio files
         output_dir: Output directory for generated chains
-        quality: Audio quality setting
-        parallel_processes: Number of parallel processes
         dry_run: If True, only show what would be created
         
     Returns:
@@ -280,63 +278,63 @@ def process_audio_directory(input_dir: str, output_dir: str, quality: str = "sta
     print("📋 Planning sample chains...")
     planner = SmartChainPlanner(config)
     sample_chains = planner.plan_smart_chains(audio_files)
-    print(f"✅ Planned {len(sample_chains)} sample chains")
     
-    # Convert sample_chains dict to list format for processing
-    chains = []
-    for chain_key, chain_data in sample_chains.items():
-        chains.append({
-            'name': chain_key,
-            'files': chain_data['files'],
-            'metadata': chain_data['metadata']
-        })
+    print(f"📊 Created {len(sample_chains)} sample chains")
     
-    # Build audio chains
-    print("🔨 Building audio chains...")
+    # Build sample chains
+    print("🔨 Building sample chains...")
     processor = AudioProcessor()
     converter = AudioConverter()
-    builder = SampleChainBuilder(config.audio_config)
+    builder = SampleChainBuilder(processor, converter)
     
     built_chains = []
-    for chain in chains:
-        print(f"  Building {chain['name']}...")
-        # Convert file paths to Path objects
-        file_paths = [Path(fp) if isinstance(fp, str) else fp for fp in chain['files']]
+    for chain_key, chain_data in sample_chains.items():
+        print(f"  📁 Building {chain_key}...")
         
-        # Build the sample chain
-        sample_chain = builder.build_sample_chain(file_paths, chain['name'])
+        # Convert file paths to Path objects if they're strings
+        file_paths = []
+        for file_path in chain_data['files']:
+            if isinstance(file_path, str):
+                file_paths.append(Path(file_path))
+            else:
+                file_paths.append(file_path)
         
-        # Add to built chains with original file paths for markdown
-        built_chains.append({
-            'name': chain['name'],
-            'chain': sample_chain,
-            'metadata': chain['metadata'],
-            'original_files': chain['files']
-        })
+        try:
+            built_chain = builder.build_sample_chain(file_paths, chain_key)
+            built_chains.append({
+                'name': chain_key,
+                'chain': built_chain,
+                'metadata': chain_data['metadata'],
+                'files': chain_data['files'],
+                'original_files': chain_data['files']  # Keep original file paths for markdown
+            })
+            print(f"    ✅ Built successfully")
+        except Exception as e:
+            print(f"    ❌ Failed to build: {e}")
+            continue
+    
+    if not built_chains:
+        raise RuntimeError("No sample chains were built successfully")
     
     # Export chains
-    print("💾 Exporting chains...")
+    print("📤 Exporting sample chains...")
     exporter = ChainExporter()
     
-    # Create root metadata directory
-    root_metadata_dir = output_path / "metadata"
-    root_metadata_dir.mkdir(exist_ok=True)
+    for chain_data in built_chains:
+        print(f"  📁 Exporting {chain_data['name']}...")
+        try:
+            exporter.export_chain(
+                chain_data['chain'],
+                chains_path,
+                chain_data['metadata'],
+                root_metadata_dir=output_path / "metadata"
+            )
+            print(f"    ✅ Exported successfully")
+        except Exception as e:
+            print(f"    ❌ Failed to export: {e}")
+            continue
     
-    exported_files = []
-    for chain in built_chains:
-        # Debug output
-        print(f"    Debug: export_chain_data keys: {list(chain['chain'].keys())}")
-        print(f"    Debug: export_chain_data['metadata'] keys: {list(chain['chain']['metadata'].keys())}")
-        print(f"    Debug: sample_duration type: {type(chain['chain']['metadata']['sample_duration'])}")
-        print(f"      Debug: group_key = {chain['chain']['metadata']['group_key']} (type: {type(chain['chain']['metadata']['group_key'])})")
-        print(f"      Debug: sample_count = {chain['chain']['metadata']['sample_count']} (type: {type(chain['chain']['metadata']['sample_count'])})")
-        print(f"      Debug: sample_duration = {chain['chain']['metadata']['sample_duration']} (type: {type(chain['chain']['metadata']['sample_duration'])})")
-        
-        # Export to chains subfolder with root metadata directory
-        exporter.export_chain(chain['chain'], chains_path, root_metadata_dir=root_metadata_dir)
-        print(f"  ✅ Exported {chain['name']} to {chain['chain']['metadata']['group_key']}-{chain['chain']['metadata']['sample_count']}-{chain['chain']['metadata']['sample_duration']:.3f}s.wav")
-    
-    # Create metadata folder and save configuration
+    # Create metadata folder
     print("📁 Creating metadata folder...")
     metadata_dir = output_path / "metadata"
     metadata_dir.mkdir(exist_ok=True)
@@ -344,9 +342,7 @@ def process_audio_directory(input_dir: str, output_dir: str, quality: str = "sta
     # Save chain configuration
     chain_config = {
         'configuration': {
-            'max_samples_per_chain': max_samples,
-            'quality': quality,
-            'parallel_processes': parallel_processes
+            'max_samples_per_chain': max_samples
         },
         'chains': [chain['metadata'] for chain in built_chains]
     }
@@ -378,10 +374,6 @@ def process_audio_directory(input_dir: str, output_dir: str, quality: str = "sta
 @click.command()
 @click.argument('input_dir', type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.argument('output_dir', type=click.Path(file_okay=False, dir_okay=True))
-@click.option('--quality', '-q', type=click.Choice(['fast', 'standard', 'high']),
-              default='standard', help='Quality preset')
-@click.option('--parallel', '-p', type=int, default=4,
-              help='Number of parallel processes')
 @click.option('--verbose', '-v', is_flag=True, help='Verbose output')
 @click.option('--dry-run', is_flag=True, help='Show what would be processed without doing it')
 @click.option('--config', type=click.Path(exists=True, file_okay=True, dir_okay=False),
@@ -389,8 +381,6 @@ def process_audio_directory(input_dir: str, output_dir: str, quality: str = "sta
 def main(
     input_dir: str,
     output_dir: str,
-    quality: str,
-    parallel: int,
     verbose: bool,
     dry_run: bool,
     config: Optional[str]
@@ -567,8 +557,7 @@ def main(
         result = process_audio_directory(
             input_dir=input_dir,
             output_dir=output_dir,
-            quality=quality,
-            parallel_processes=parallel
+            dry_run=dry_run
         )
         
         if result['status'] == 'completed':
