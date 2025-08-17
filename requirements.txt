@@ -1,35 +1,16 @@
 # Core audio processing libraries
-librosa>=0.10.0          # Audio analysis and processing
-soundfile>=0.12.1         # Audio file I/O (WAV, FLAC, etc.)
+librosa>=0.10.0          # Audio analysis and processing (MP3 support)
+soundfile>=0.12.1         # Audio file I/O (WAV, FLAC, AIFF)
 numpy>=1.24.0             # Numerical computing
 scipy>=1.10.0             # Scientific computing (signal processing)
 
-# Audio quality and effects
-pyloudnorm>=0.1.0         # Loudness normalization
-pyrubberband>=0.4.0       # High-quality time stretching
-
 # File handling and utilities
-pathlib2>=2.3.7           # Path utilities (Python <3.4 compatibility)
 pyyaml>=6.0                # YAML configuration files
 click>=8.1.0               # Command line interface creation
-tqdm>=4.65.0               # Progress bars
 
 # Testing and development
 pytest>=7.3.0              # Testing framework
 pytest-cov>=4.0.0          # Coverage reporting
-pytest-mock>=3.10.0        # Mocking for tests
-
-# Performance and optimization
-joblib>=1.2.0              # Parallel processing
-psutil>=5.9.0               # System and process utilities
-
-# Logging and debugging
-colorlog>=6.7.0             # Colored logging output
-rich>=13.0.0                # Rich text and formatting
-
-# Optional: GUI support (future enhancement)
-# tkinter                  # Built-in Python GUI (no pip install needed)
-# matplotlib>=3.6.0        # Plotting and visualization
 
 
 
