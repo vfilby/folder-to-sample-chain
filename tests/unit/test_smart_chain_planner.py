@@ -8,7 +8,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock
 
-from src.utils.smart_chain_planner import SmartChainPlanner, create_smart_chains
+from src.utils.smart_chain_planner import SmartChainPlanner
 from src.utils.sample_chain_config import SampleChainConfig
 
 
@@ -43,7 +43,8 @@ class TestSmartChainPlanner:
         self.all_files = self.hihat_files + self.regular_files
         
         # Create planner with default config
-        self.planner = SmartChainPlanner()
+        config = SampleChainConfig()
+        self.planner = SmartChainPlanner(config)
     
     def test_hihat_file_detection(self):
         """Test that hihat files are correctly identified."""
@@ -236,7 +237,8 @@ class TestSmartChainPlannerIntegration:
         
         if hihat_files:
             # Create planner
-            planner = SmartChainPlanner()
+            config = SampleChainConfig()
+            planner = SmartChainPlanner(config)
             
             # Plan chains
             sample_chains = planner.plan_smart_chains(hihat_files)
@@ -259,28 +261,3 @@ class TestSmartChainPlannerIntegration:
                         # First N files should be closed hihats
                         for i in range(closed_count):
                             assert any(pattern in files[i].lower() for pattern in ['closedhh', 'clsdhh'])
-
-
-def test_create_smart_chains_function():
-    """Test the convenience function."""
-    files = [
-        Path("Drums/Hihat/ClosedHH Test 1.wav"),
-        Path("Drums/Hihat/ClosedHH Test 2.wav"),
-        Path("Drums/Hihat/OpenHH Test.wav"),
-    ]
-
-    sample_chains = create_smart_chains(files)
-
-    # Hi-hat chains are now named 'hats', 'hats_1', etc.
-    assert any(k.startswith('hats') for k in sample_chains.keys())
-    
-    # Check that we have the expected hi-hat chain
-    hats_chain = None
-    for key, chain in sample_chains.items():
-        if key.startswith('hats'):
-            hats_chain = chain
-            break
-    
-    assert hats_chain is not None
-    assert hats_chain['metadata']['type'] == 'hihat'
-    assert len(hats_chain['files']) == 3
