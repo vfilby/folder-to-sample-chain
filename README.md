@@ -1,5 +1,13 @@
 # NI Sample Chainer
 
+> ⚠️ **VIBE-CODED WARNING** ⚠️
+> 
+> This project was vibe-coded (though by someone who knows how to code) for a specific use case: creating sample chains for the Elektron Digitakt 2 from a particular audio library structure. While it's designed to be flexible, **results may vary** depending on your specific audio files, directory structure, and use case.
+> 
+> **Use at your own risk** and test thoroughly with your audio material before relying on it for production work.
+
+---
+
 A Python-based audio processing tool designed to create evenly spaced sample chains from local WAV files, specifically optimized for use with the Elektron Digitakt 2 sampler.
 
 ## 🎯 Project Overview
