@@ -288,9 +288,12 @@ def process_audio_directory(input_dir: str, output_dir: str, dry_run: bool = Fal
     
     # Build sample chains
     print("🔨 Building sample chains...")
-    processor = AudioProcessor()
-    converter = AudioConverter()
-    builder = SampleChainBuilder(processor, converter)
+    builder = SampleChainBuilder({
+        'output_sample_rate': 48000,
+        'output_bit_depth': 16,
+        'output_channels': 2,
+        'max_samples_per_chain': max_samples
+    })
     
     built_chains = []
     for chain_key, chain_data in sample_chains.items():
