@@ -12,6 +12,11 @@ import numpy as np
 import yaml
 import click
 
+# Add src directory to path for imports to work
+src_path = Path(__file__).parent
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 # Import our modules
 from utils.sample_chain_config import SampleChainConfig
 from utils.smart_chain_planner import SmartChainPlanner
