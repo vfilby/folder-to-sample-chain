@@ -434,8 +434,7 @@ def main(
     # Configuration summary
     if verbose:
         print("⚙️  Configuration:")
-        print("   Quality: standard")
-        print("   Parallel processes: 4")
+        print(f"   Max samples per chain: {max_samples}")
         print()
     
     # Dry run mode
