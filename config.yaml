@@ -1,0 +1,81 @@
+# NI Sample Chainer Configuration File
+# This file contains default settings for the audio processing tool
+
+# Default processing settings
+defaults:
+  sample_duration: 1.0      # Duration of each sample in seconds
+  overlap: 0                 # Overlap percentage between samples (0-50)
+  crossfade: 50             # Crossfade duration in milliseconds
+  start_trim: 0.0           # Trim from start of file in seconds
+  end_trim: 0.0             # Trim from end of file in seconds
+  quality: standard          # Quality preset: fast, standard, high
+  parallel_processes: 4      # Number of parallel processes for batch operations
+
+# Audio processing settings
+audio:
+  input_formats:             # Supported input formats
+    - wav
+    - flac
+    - aiff
+  output_format: wav         # Output format (always WAV for Digitakt 2)
+  sample_rate: 44100         # Output sample rate (Digitakt 2 standard)
+  bit_depth: 16              # Output bit depth (Digitakt 2 standard)
+  normalize: true             # Normalize audio levels
+  fade_in: 10                # Fade in duration in milliseconds
+  fade_out: 10               # Fade out duration in milliseconds
+
+# Digitakt 2 specific settings
+digitakt:
+  naming_convention: "{original_name}_{sample_number:03d}"  # Sample naming pattern
+  max_filename_length: 32    # Maximum filename length for device compatibility
+  folder_structure: true     # Create organized folder structure
+  metadata_export: true      # Export sample metadata as JSON
+  batch_export: true         # Export all samples in a single operation
+
+# Quality presets
+quality_presets:
+  fast:
+    sample_duration: 1.0
+    overlap: 0
+    crossfade: 25
+    normalize: false
+    parallel_processes: 8
+  
+  standard:
+    sample_duration: 1.0
+    overlap: 0
+    crossfade: 50
+    normalize: true
+    parallel_processes: 4
+  
+  high:
+    sample_duration: 1.0
+    overlap: 10
+    crossfade: 100
+    normalize: true
+    parallel_processes: 2
+
+# File organization
+output:
+  create_date_folders: true  # Create date-based folders for output
+  preserve_original_names: true  # Keep original file names in sample names
+  max_samples_per_file: 100  # Maximum samples generated per input file
+  min_sample_duration: 0.1   # Minimum sample duration in seconds
+  max_sample_duration: 10.0  # Maximum sample duration in seconds
+
+# Logging and debugging
+logging:
+  level: INFO                # Log level: DEBUG, INFO, WARNING, ERROR
+  file_logging: true         # Save logs to file
+  console_output: true       # Show logs in console
+  log_retention_days: 30     # Keep logs for specified number of days
+
+# Performance settings
+performance:
+  memory_limit_gb: 2.0       # Maximum memory usage in GB
+  chunk_size_seconds: 60     # Process audio in chunks of this size
+  cache_enabled: true        # Enable caching for repeated operations
+  temp_directory: null       # Custom temp directory (null = system default)
+
+
+
