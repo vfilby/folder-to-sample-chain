@@ -433,6 +433,8 @@ def main(
     
     # Configuration summary
     if verbose:
+        config = SampleChainConfig()
+        max_samples = config.max_samples_per_chain
         print("⚙️  Configuration:")
         print(f"   Max samples per chain: {max_samples}")
         print()
