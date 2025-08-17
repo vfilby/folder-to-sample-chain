@@ -8,7 +8,6 @@ Processes audio files and creates sample chains optimized for the Elektron Digit
 import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, List
-import numpy as np
 import yaml
 import click
 
