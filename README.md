@@ -21,7 +21,6 @@ The NI Sample Chainer processes audio files to create intelligent sample chains 
 - **Smart Grouping**: Groups samples by directory structure and type
 - **Digitakt 2 Optimized**: Export in formats directly compatible with your device
 - **Dry-Run Mode**: Preview what will be created before processing
-- **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## Quick Start
 

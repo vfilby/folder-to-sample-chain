@@ -332,9 +332,9 @@ def process_audio_directory(input_dir: str, output_dir: str, dry_run: bool = Fal
         print(f"  📁 Exporting {chain_data['name']}...")
         try:
             exporter.export_chain(
-                chain_data['chain'],
+                chain_data,  # Pass the entire chain_data dictionary
                 chains_path,
-                chain_data['metadata'],
+                filename=None,  # Let the exporter generate the filename
                 root_metadata_dir=output_path / "metadata"
             )
             print(f"    ✅ Exported successfully")

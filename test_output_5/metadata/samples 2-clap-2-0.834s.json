@@ -1,0 +1,9 @@
+{
+  "type": "regular",
+  "sample_count": 2,
+  "estimated_duration_seconds": 0.8340416666666668,
+  "estimated_file_size_mb": 0.1905059814453125,
+  "chain_number": 1,
+  "max_samples_per_chain": 16,
+  "total_files": 2
+}

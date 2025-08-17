@@ -76,12 +76,12 @@ class ChainExporter:
             'audio_export': audio_result,
             'metadata_export': metadata_result,
             'chain_info': {
-                'sample_count': chain_data['sample_count'],
-                'sample_length': chain_data['sample_length'],
-                'total_duration': chain_data['total_duration'],
-                'sample_rate': chain_data['metadata']['sample_rate'],
-                'bit_depth': chain_data['metadata']['bit_depth'],
-                'channels': chain_data['metadata']['channels']
+                'sample_count': chain_data['metadata']['sample_count'],
+                'sample_length': chain_data['chain']['sample_length'],
+                'total_duration': chain_data['chain']['total_duration'],
+                'sample_rate': chain_data['chain']['metadata']['sample_rate'],
+                'bit_depth': chain_data['chain']['metadata']['bit_depth'],
+                'channels': chain_data['chain']['metadata']['channels']
             }
         }
     
@@ -95,13 +95,8 @@ class ChainExporter:
         Returns:
             Generated filename
         """
-        metadata = chain_data['metadata']
-        group_key = metadata['group_key']
-        
-        # Debug: Print what we're working with
-        print(f"      Debug: group_key = {group_key} (type: {type(group_key)})")
-        print(f"      Debug: sample_count = {metadata['sample_count']} (type: {type(metadata['sample_count'])})")
-        print(f"      Debug: sample_duration = {metadata['sample_duration']} (type: {type(metadata['sample_duration'])})")
+        # Use the name field which contains the group information
+        group_key = chain_data.get('name', 'unknown')
         
         # Extract components from group key (e.g., "drums/kick" -> "drums-kick")
         if '/' in group_key:
@@ -115,9 +110,10 @@ class ChainExporter:
         else:
             base_name = group_key
             
-        # Add sample count and length info
-        sample_count = metadata['sample_count']
-        sample_duration = metadata['sample_duration']
+        # Get sample count and duration from metadata
+        metadata = chain_data.get('metadata', {})
+        sample_count = metadata.get('sample_count', 0)
+        sample_duration = metadata.get('estimated_duration_seconds', 0)
         
         filename = f"{base_name}-{sample_count}-{sample_duration:.3f}s"
         return filename
@@ -134,8 +130,9 @@ class ChainExporter:
             Export result dictionary
         """
         try:
-            audio_data = chain_data['audio_data']
-            metadata = chain_data['metadata']
+            # The audio data is in chain_data['chain']['audio_data']
+            audio_data = chain_data['chain']['audio_data']
+            metadata = chain_data['chain']['metadata']
             
             # Determine soundfile subtype based on bit depth
             if metadata['bit_depth'] == 16:
