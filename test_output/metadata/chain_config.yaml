@@ -1,54 +1,10 @@
 chains:
 - chain_number: 1
-  closed_count: 3
-  estimated_duration_seconds: 3.1233125
-  estimated_file_size_mb: 1.1301994323730469
-  hat_names:
-  - sample hat1
-  - sample hat1 1
-  - sample hat1 2
-  - sample hat2
-  - sample hat3
-  interleaved_sequence:
-  - sample_data/input/samples 2/closedhh/sample hat1.wav
-  - sample_data/input/samples 2/openhh/sample hat1 1.wav
-  - sample_data/input/samples 2/openhh/sample hat1 2.wav
-  - sample_data/input/samples 2/closedhh/sample hat2.wav
-  - sample_data/input/samples 2/openhh/sample hat2.wav
-  - sample_data/input/samples 2/closedhh/sample hat3.wav
-  - sample_data/input/samples 2/openhh/sample hat3.wav
+  estimated_duration_seconds: 5.0
+  estimated_file_size_mb: 0.91552734375
   max_samples_per_chain: 16
-  open_count: 4
-  sample_count: 7
-  total_files: 7
-  type: hihat
-- chain_number: 1
-  estimated_duration_seconds: 0.8870416666666667
-  estimated_file_size_mb: 0.16918182373046875
-  max_samples_per_chain: 16
-  sample_count: 2
-  total_files: 2
-  type: regular
-- chain_number: 1
-  estimated_duration_seconds: 0.9872291666666666
-  estimated_file_size_mb: 0.221649169921875
-  max_samples_per_chain: 16
-  sample_count: 3
-  total_files: 3
-  type: regular
-- chain_number: 1
-  estimated_duration_seconds: 0.8340416666666668
-  estimated_file_size_mb: 0.1905059814453125
-  max_samples_per_chain: 16
-  sample_count: 2
-  total_files: 2
-  type: regular
-- chain_number: 1
-  estimated_duration_seconds: 30.338321995464852
-  estimated_file_size_mb: 5.555110931396484
-  max_samples_per_chain: 16
-  sample_count: 1
-  total_files: 1
+  sample_count: 5
+  total_files: 5
   type: regular
 configuration:
   max_samples_per_chain: 16
