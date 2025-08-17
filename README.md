@@ -8,19 +8,19 @@
 
 ---
 
-A Python-based audio processing tool designed to create evenly spaced sample chains from local WAV files, specifically optimized for use with the Elektron Digitakt 2 sampler.
+A Python-based audio processing tool designed to create sample chains from local audio files, specifically optimized for use with the Elektron Digitakt 2 sampler.
 
 ## Project Overview
 
-The NI Sample Chainer processes audio files to create consistent, evenly spaced samples that can be easily loaded into the Digitakt 2 for music production and performance. It's designed for musicians, producers, and sound designers who need to quickly convert long audio files into usable sample collections.
+The NI Sample Chainer processes audio files to create intelligent sample chains that can be easily loaded into the Digitakt 2 for music production and performance. It's designed for musicians, producers, and sound designers who need to quickly organize and combine audio samples into logical groups.
 
 ## Key Features
 
-- **Batch Processing**: Process entire directories of WAV files at once
-- **Even Spacing**: Generate samples at consistent temporal intervals
-- **Quality Preservation**: Maintain audio fidelity throughout processing
+- **Batch Processing**: Process entire directories of audio files at once
+- **Hi-hat Detection**: Automatically identifies and interleaves closed and open hi-hat samples
+- **Smart Grouping**: Groups samples by directory structure and type
 - **Digitakt 2 Optimized**: Export in formats directly compatible with your device
-- **Configurable Parameters**: Customize sample duration, overlap, crossfading, and more
+- **Dry-Run Mode**: Preview what will be created before processing
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## Quick Start
@@ -44,15 +44,31 @@ pip install -r requirements.txt
 ### Basic Usage
 
 ```bash
-# Process a directory of WAV files
+# Process a directory of audio files
 python src/main.py input_audio_directory output_samples
 
 # With custom parameters
 python src/main.py input_dir output_dir \
-  --sample-duration 2.0 \
-  --overlap 25 \
-  --crossfade 100 \
-  --quality high
+  --quality high \
+  --parallel 8 \
+  --verbose
+
+# Preview what will be created (dry-run mode)
+python src/main.py input_dir output_dir --dry-run
+```
+
+## Available Command Line Options
+
+```bash
+python src/main.py INPUT_DIR OUTPUT_DIR [OPTIONS]
+
+Options:
+  --quality, -q TEXT        Quality preset: fast, standard, high [default: standard]
+  --parallel, -p INTEGER    Number of parallel processes [default: 4]
+  --verbose, -v            Verbose output
+  --dry-run                Show what would be processed without doing it
+  --config PATH            Configuration file path
+  --help                   Show this message and exit
 ```
 
 ## Project Structure
@@ -61,7 +77,6 @@ python src/main.py input_dir output_dir \
 ni-sample-chainer/
 ├── src/                    # Source code
 │   ├── audio_processing/  # Core audio processing logic
-│   ├── digitakt_export/   # Digitakt 2 specific export
 │   ├── utils/             # Utility functions
 │   └── main.py            # Main application entry point
 ├── tests/                 # Test suite
@@ -75,35 +90,45 @@ ni-sample-chainer/
 
 ## Configuration
 
-The tool supports both command-line options and configuration files. Create a `config.yaml` file in your project directory:
+The tool supports both command-line options and configuration files. The `config.yaml` file contains default settings:
 
 ```yaml
 # Default processing settings
 defaults:
-  sample_duration: 1.0      # seconds
-  overlap: 0                # percentage
-  crossfade: 50            # milliseconds
-  quality: standard         # fast, standard, high
+  quality: standard          # fast, standard, high
   parallel_processes: 4
 
-# Digitakt 2 specific settings
-digitakt:
+# Audio processing settings
+audio:
+  input_formats: [wav, flac, aiff, mp3]
   output_format: wav
-  sample_rate: 44100
-  bit_depth: 16
-  naming_convention: "{original_name}_{sample_number:03d}"
+  sample_rate: 48000        # Output sample rate
+  bit_depth: 16             # Output bit depth
+  normalize: true
+
+# Quality presets
+quality_presets:
+  fast:
+    normalize: false
+    parallel_processes: 8
+  standard:
+    normalize: true
+    parallel_processes: 4
+  high:
+    normalize: true
+    parallel_processes: 2
 ```
 
 ## Supported Audio Formats
 
 ### Input
-- **Primary**: WAV (16-bit, 24-bit, 44.1kHz, 48kHz, 96kHz)
-- **Secondary**: MP3, AIFF, FLAC
+- **Primary**: WAV, FLAC, AIFF, MP3
+- **Sample Rates**: Any (will be converted to output format)
 
 ### Output
 - **Format**: WAV (16-bit, 48kHz - Digitakt 2 standard)
-- **Channels**: Stereo (configurable to mono)
-- **Quality**: High-fidelity with configurable compression
+- **Channels**: Stereo (preserved from input)
+- **Quality**: High-fidelity with normalization options
 
 ## Sample Chain Generation
 
